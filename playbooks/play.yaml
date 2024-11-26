@@ -1,5 +1,9 @@
 - name: Playbook to Install Docker
   hosts: all
+  vars:
+    base_dest_download_path: /tmp
+    containerd_version: containerd.io_1.7.23-1_amd64.deb
+    docker_ce_cli_version: docker-ce-cli_27.3.1-1~ubuntu.22.04~jammy_amd64.deb
   tasks:
     # As root -> target machine
 
@@ -16,20 +20,20 @@
         pacotes_to_install: nano,vim,curl,wget
       register: pacotes
 
-    - name: Download ContainerD .deb file
+    - name: Download ContainerD .deb package
       ansible.builtin.get_url:
-        url: https://download.docker.com/linux/ubuntu/dists/jammy/pool/stable/amd64/containerd.io_1.7.23-1_amd64.deb
-        dest: /tmp
-        mode: 'u+x,g+x'
+        url: "https://download.docker.com/linux/ubuntu/dists/jammy/pool/stable/amd64/{{ containerd_version }}"
+        dest: "{{ base_dest_download_path }}"
+        mode: "u+x,g+x"
       register: containerd_download_res
       notify:
         - Install containerd .deb package
 
     - name: Download DockerCE .deb file
       ansible.builtin.get_url:
-        url: https://download.docker.com/linux/ubuntu/dists/jammy/pool/stable/amd64/docker-ce-cli_27.3.1-1~ubuntu.22.04~jammy_amd64.deb
-        dest: /tmp
-        mode: 'u+x,g+x'
+        url: "https://download.docker.com/linux/ubuntu/dists/jammy/pool/stable/amd64/{{ docker_ce_cli_version }}"
+        dest: "{{ base_dest_download_path }}"
+        mode: "u+x,g+x"
       register: docker_ce_download_res
       notify:
         - Install docker_ce .deb package
